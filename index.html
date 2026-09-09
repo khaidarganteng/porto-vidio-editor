@@ -172,6 +172,11 @@
     background:repeating-conic-gradient(from 0deg, rgba(255,45,67,0.09) 0deg 2.2deg, transparent 2.2deg 11deg);
     pointer-events:none;
     z-index:0;
+    animation:spin-slow 90s linear infinite;
+  }
+  @keyframes spin-slow{
+    from{ transform:rotate(0deg); }
+    to{ transform:rotate(360deg); }
   }
 
   .hero-grid{
@@ -251,6 +256,53 @@
   .card-stage{
     position:relative;
     perspective:1000px;
+  }
+
+  .card-stage::before{
+    content:"";
+    position:absolute;
+    inset:-50px;
+    background:radial-gradient(circle, rgba(255,45,67,0.35), transparent 68%);
+    filter:blur(24px);
+    z-index:0;
+    animation:pulse-glow 3.6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes pulse-glow{
+    0%,100%{ opacity:0.45; transform:scale(0.94); }
+    50%{ opacity:0.95; transform:scale(1.06); }
+  }
+
+  .halo-ring{
+    position:absolute;
+    top:-6%;
+    right:6%;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    border:1.5px solid rgba(255,45,67,0.55);
+    box-shadow:0 0 22px rgba(255,45,67,0.45), inset 0 0 18px rgba(255,45,67,0.25);
+    z-index:1;
+    pointer-events:none;
+  }
+  .halo-ring::before{
+    content:"";
+    position:absolute;
+    inset:14px;
+    border-radius:50%;
+    border:1px dashed rgba(0,240,255,0.4);
+    animation:spin-slow 14s linear infinite;
+  }
+  .halo-ring::after{
+    content:"";
+    position:absolute;
+    top:50%; left:50%;
+    width:6px; height:6px;
+    background:var(--red);
+    border-radius:50%;
+    box-shadow:0 0 10px var(--red), 0 0 20px var(--red);
+    transform:translate(-50%,-50%);
+    animation:pulse-glow 2.2s ease-in-out infinite;
   }
 
   .char-card{
@@ -650,6 +702,42 @@
     overflow:hidden;
   }
 
+  .footer-sunburst{
+    position:absolute;
+    top:50%; left:50%;
+    width:1400px;
+    height:1400px;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    background:repeating-conic-gradient(from 0deg, rgba(242,239,228,0.045) 0deg 2deg, transparent 2deg 10deg);
+    animation:spin-slow 120s linear infinite reverse;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .footer-kicker{
+    position:relative;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:3px;
+    color:var(--red);
+    margin-bottom:20px;
+  }
+  .footer-kicker::before, .footer-kicker::after{
+    content:"";
+    width:26px; height:1px;
+    background:var(--red);
+  }
+
+  .footer-title{ position:relative; z-index:2; }
+  .footer-cta{ position:relative; z-index:2; }
+  .footer-bottom{ position:relative; z-index:2; }
+
   .footer-title{
     font-size:clamp(46px, 10vw, 130px);
     color:var(--black);
@@ -769,6 +857,7 @@
     </div>
 
     <div class="card-stage">
+      <div class="halo-ring"></div>
       <div class="char-card" id="charCard">
         <div class="halftone"></div>
         <div class="spotlight" id="spotlight"></div>
@@ -828,10 +917,10 @@
       Every project wears two faces — <span class="hi">the one the world sees</span>, and the engineered anatomy underneath. I build digital experiences where craft hides in plain night, waiting for the <span class="hi2">scroll, the hover, the reveal.</span>
     </p>
 
-    <div class="stat-grid">
-      <div class="stat-row"><div class="stat-num">08</div><div class="stat-label">Years building interactive work</div></div>
-      <div class="stat-row"><div class="stat-num">34</div><div class="stat-label">Projects shipped to production</div></div>
-      <div class="stat-row"><div class="stat-num">12</div><div class="stat-label">Awards &amp; features collected</div></div>
+    <div class="stat-grid" id="statGrid">
+      <div class="stat-row"><div class="stat-num" data-target="8">00</div><div class="stat-label">Years building interactive work</div></div>
+      <div class="stat-row"><div class="stat-num" data-target="34">00</div><div class="stat-label">Projects shipped to production</div></div>
+      <div class="stat-row"><div class="stat-num" data-target="12">00</div><div class="stat-label">Awards &amp; features collected</div></div>
     </div>
   </div>
 </section>
@@ -879,8 +968,10 @@
 
 <!-- ===================== FOOTER ===================== -->
 <footer id="contact">
+  <div class="footer-sunburst"></div>
   <div class="web-lines"></div>
   <div class="wrap">
+    <div class="footer-kicker">03 — TRANSMISSION</div>
     <h2 class="footer-title">LET'S MAKE<br><span>A SCENE</span></h2>
     <div class="footer-cta">
       <a href="mailto:studio@beyondthemask.work">START A PROJECT</a>
@@ -910,6 +1001,29 @@
       card.style.setProperty('--my', y + '%');
     });
   }
+
+  // Animated count-up for the stat numbers
+  const statNums = document.querySelectorAll('.stat-num');
+  const statIo = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = parseInt(el.getAttribute('data-target'), 10);
+        const duration = 1400;
+        const start = performance.now();
+        function tick(now) {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const value = Math.round(eased * target);
+          el.textContent = value.toString().padStart(2, '0');
+          if (progress < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+        statIo.unobserve(el);
+      }
+    });
+  }, { threshold: 0.4 });
+  statNums.forEach(n => statIo.observe(n));
 
   // One-time staggered reveal for the comic grid panels
   const panels = document.querySelectorAll('#comicGrid .panel');
