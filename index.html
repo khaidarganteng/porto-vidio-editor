@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beyond the Mask — Studio Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#040406;
+    --navy:#080b18;
+    --panel:#0d1122;
+    --panel-edge:#1a2038;
+    --red:#ff2d43;
+    --red-deep:#c4102a;
+    --cyan:#00f0ff;
+    --cyan-dim:#0aa8b8;
+    --paper:#f2efe4;
+    --paper-dim:#c9c6ba;
+    --gutter: clamp(20px, 5vw, 64px);
+    --maxw: 1240px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--black);
+    color:var(--paper);
+    font-family:'Space Grotesk', sans-serif;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  ::selection{ background:var(--red); color:var(--black); }
+
+  h1,h2,h3, .display{
+    font-family:'Anton', sans-serif;
+    font-weight:400;
+    letter-spacing:0.5px;
+    line-height:0.92;
+    text-transform:uppercase;
+  }
+
+  a{ color:inherit; text-decoration:none; }
+
+  img{max-width:100%;display:block;}
+
+  .wrap{
+    max-width:var(--maxw);
+    margin:0 auto;
+    padding-left:var(--gutter);
+    padding-right:var(--gutter);
+  }
+
+  /* ---------- texture layers ---------- */
+
+  .halftone{
+    background-image:radial-gradient(rgba(242,239,228,0.16) 1px, transparent 1.4px);
+    background-size:7px 7px;
+  }
+
+  .halftone-red{
+    background-image:radial-gradient(var(--red) 1px, transparent 1.4px);
+    background-size:6px 6px;
+  }
+
+  .web-lines{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    opacity:0.16;
+    background-image:
+      repeating-linear-gradient(115deg, rgba(0,240,255,0.5) 0px, rgba(0,240,255,0.5) 1px, transparent 1px, transparent 130px),
+      repeating-linear-gradient(25deg, rgba(0,240,255,0.35) 0px, rgba(0,240,255,0.35) 1px, transparent 1px, transparent 90px);
+  }
+
+  .grain{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:500;
+    opacity:0.045;
+    mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ---------- nav ---------- */
+
+  header.nav{
+    position:fixed;
+    top:0; left:0; right:0;
+    z-index:100;
+    background:linear-gradient(to bottom, rgba(4,4,6,0.92), rgba(4,4,6,0));
+    padding:22px 0 30px;
+  }
+
+  .nav-inner{
+    max-width:var(--maxw);
+    margin:0 auto;
+    padding:0 var(--gutter);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  .nav-mark{
+    font-family:'Anton', sans-serif;
+    font-size:22px;
+    letter-spacing:1px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .nav-mark span{
+    display:inline-block;
+    width:9px;height:9px;
+    background:var(--red);
+    border-radius:50%;
+    box-shadow:0 0 10px var(--red);
+  }
+
+  .nav-links{
+    display:flex;
+    gap:clamp(18px,3vw,40px);
+    font-size:14px;
+    font-weight:600;
+    letter-spacing:1.5px;
+  }
+
+  .nav-links a{
+    position:relative;
+    padding:4px 0;
+    transition:color .2s ease;
+  }
+  .nav-links a::after{
+    content:"";
+    position:absolute;
+    left:0; bottom:-2px;
+    width:0; height:2px;
+    background:var(--cyan);
+    transition:width .25s ease;
+  }
+  .nav-links a:hover{ color:var(--cyan); }
+  .nav-links a:hover::after{ width:100%; }
+
+  /* ---------- hero ---------- */
+
+  .hero{
+    position:relative;
+    min-height:100svh;
+    display:flex;
+    align-items:center;
+    padding-top:120px;
+    padding-bottom:60px;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 900px 600px at 78% 18%, rgba(255,45,67,0.16), transparent 60%),
+      var(--black);
+  }
+
+  .sunburst{
+    position:absolute;
+    top:-30%;
+    right:-18%;
+    width:1100px;
+    height:1100px;
+    border-radius:50%;
+    background:repeating-conic-gradient(from 0deg, rgba(255,45,67,0.09) 0deg 2.2deg, transparent 2.2deg 11deg);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .hero-grid{
+    position:relative;
+    z-index:2;
+    width:100%;
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:clamp(30px,5vw,70px);
+    align-items:center;
+  }
+
+  .hero-copy .kicker{
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:3px;
+    color:var(--cyan);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .hero-copy .kicker::before{
+    content:"";
+    width:26px;height:2px;
+    background:var(--cyan);
+  }
+
+  .hero-title{
+    font-size:clamp(52px, 9vw, 118px);
+    color:var(--paper);
+    -webkit-text-stroke:1.5px var(--paper);
+  }
+  .hero-title .line2{
+    color:var(--black);
+    -webkit-text-stroke:2px var(--red);
+    text-shadow: 3px 3px 0 var(--red), -1px -1px 0 var(--cyan);
+  }
+
+  .hero-sub{
+    max-width:46ch;
+    margin-top:22px;
+    color:var(--paper-dim);
+    font-size:16px;
+    line-height:1.6;
+  }
+
+  .meta-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0;
+    margin-top:42px;
+    border-top:1px solid var(--panel-edge);
+  }
+  .meta-tags div{
+    flex:1 1 140px;
+    padding:16px 18px 0 0;
+    border-right:1px solid var(--panel-edge);
+  }
+  .meta-tags div:last-child{ border-right:none; }
+  .meta-label{
+    font-size:11px;
+    letter-spacing:2px;
+    color:var(--red);
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  .meta-value{
+    font-size:14px;
+    color:var(--paper);
+    font-weight:500;
+    line-height:1.4;
+  }
+
+  /* ---------- character card ---------- */
+
+  .card-stage{
+    position:relative;
+    perspective:1000px;
+  }
+
+  .char-card{
+    position:relative;
+    aspect-ratio:3/4;
+    max-width:420px;
+    margin-left:auto;
+    border-radius:6px;
+    background:
+      linear-gradient(160deg, #10152a 0%, #05060c 70%);
+    border:1px solid var(--panel-edge);
+    overflow:hidden;
+    cursor:pointer;
+    isolation:isolate;
+    box-shadow:0 30px 60px rgba(0,0,0,0.55);
+  }
+
+  .char-card .halftone{
+    position:absolute; inset:0;
+    opacity:0.5;
+    mix-blend-mode:screen;
+  }
+
+  .char-card .spotlight{
+    position:absolute; inset:0;
+    background:radial-gradient(220px 220px at var(--mx,50%) var(--my,35%), rgba(0,240,255,0.16), transparent 65%);
+    transition:opacity .3s ease;
+    opacity:0;
+    z-index:3;
+  }
+  .char-card:hover .spotlight{ opacity:1; }
+
+  .char-figure{
+    position:absolute;
+    inset:0;
+    z-index:2;
+  }
+  .char-figure svg{ width:88%; height:96%; }
+
+  .char-photo{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center 18%;
+  }
+  .char-photo.portrait{
+    z-index:1;
+    filter:grayscale(0.15) contrast(1.05);
+  }
+  .char-photo.mask{
+    z-index:2;
+    transition:opacity .7s ease, transform .7s ease;
+    filter:contrast(1.05) saturate(1.1);
+  }
+  .char-card:hover .char-photo.mask{
+    opacity:0;
+    transform:scale(1.04);
+  }
+
+  .lens{
+    transition:filter .35s ease, fill .35s ease;
+    filter:drop-shadow(0 0 0px var(--cyan));
+  }
+  .char-card:hover .lens{
+    fill:var(--cyan);
+    filter:drop-shadow(0 0 10px var(--cyan)) drop-shadow(0 0 20px var(--cyan));
+  }
+
+  .wireframe{
+    position:absolute; inset:0;
+    z-index:4;
+    opacity:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,240,255,0.5) 0, rgba(0,240,255,0.5) 1px, transparent 1px, transparent 22px),
+      repeating-linear-gradient(90deg, rgba(0,240,255,0.5) 0, rgba(0,240,255,0.5) 1px, transparent 1px, transparent 22px);
+    mix-blend-mode:screen;
+    transition:opacity .35s ease;
+  }
+  .char-card:hover .wireframe{ opacity:0.65; }
+
+  .scanline{
+    position:absolute;
+    left:0; right:0;
+    height:3px;
+    background:linear-gradient(90deg, transparent, var(--cyan), transparent);
+    z-index:5;
+    top:-10%;
+    opacity:0;
+    box-shadow:0 0 12px var(--cyan);
+  }
+  .char-card:hover .scanline{
+    opacity:1;
+    animation:scan 1.6s linear infinite;
+  }
+  @keyframes scan{
+    0%{ top:-5%; }
+    100%{ top:105%; }
+  }
+
+  .glitch-r, .glitch-c{
+    position:absolute; inset:0;
+    z-index:2;
+    mix-blend-mode:screen;
+    opacity:0;
+    transition:opacity .2s ease;
+  }
+  .char-card:hover .glitch-r,
+  .char-card:hover .glitch-c{
+    opacity:0.5;
+    animation:jit .25s steps(2,end) infinite;
+  }
+  @keyframes jit{
+    0%{ transform:translate(0,0); }
+    50%{ transform:translate(1.5px,-1px); }
+    100%{ transform:translate(-1.5px,1px); }
+  }
+
+  .card-caption{
+    position:absolute;
+    bottom:0; left:0; right:0;
+    z-index:6;
+    padding:16px 18px;
+    background:linear-gradient(to top, rgba(3,3,5,0.92), transparent);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    font-size:12px;
+    letter-spacing:1.5px;
+    color:var(--paper-dim);
+  }
+  .card-caption strong{ color:var(--paper); font-size:13px; }
+
+  /* ---------- marquee ---------- */
+
+  .marquee-section{
+    background:var(--red);
+    color:var(--black);
+    transform:rotate(-1.4deg);
+    margin:70px 0 -10px;
+    box-shadow:0 8px 0 var(--black), 0 -8px 0 var(--black);
+    overflow:hidden;
+    position:relative;
+    z-index:3;
+  }
+  .marquee-track{
+    display:flex;
+    width:max-content;
+    animation:scroll-left 26s linear infinite;
+  }
+  .marquee-track span{
+    font-family:'Anton', sans-serif;
+    font-size:clamp(30px,5vw,54px);
+    padding:14px clamp(20px,3vw,40px);
+    white-space:nowrap;
+    display:flex;
+    align-items:center;
+    gap:clamp(20px,3vw,40px);
+  }
+  .marquee-track span::after{
+    content:"✦";
+    font-size:0.4em;
+  }
+  @keyframes scroll-left{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-50%); }
+  }
+
+  /* ---------- section shared ---------- */
+
+  section{ position:relative; padding:130px 0 60px; }
+
+  .section-head{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:20px;
+    margin-bottom:56px;
+    flex-wrap:wrap;
+  }
+
+  .section-title{
+    font-size:clamp(38px, 6vw, 72px);
+    color:var(--paper);
+  }
+  .section-title .accent{
+    color:var(--black);
+    -webkit-text-stroke:1.5px var(--cyan);
+  }
+
+  .section-num{
+    font-size:13px;
+    color:var(--red);
+    font-weight:700;
+    letter-spacing:2px;
+    border:1px solid var(--red);
+    padding:6px 12px;
+    border-radius:100px;
+  }
+
+  /* ---------- comic grid ---------- */
+
+  .comic-grid-wrap{ position:relative; }
+
+  .comic-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+  }
+
+  .panel{
+    position:relative;
+    aspect-ratio:4/5;
+    border:2px solid var(--black);
+    outline:3px solid var(--panel-edge);
+    overflow:hidden;
+    background:var(--panel);
+    opacity:0;
+    transform:scale(0.92) rotate(var(--tilt,0deg));
+    transition:transform .4s cubic-bezier(.2,.8,.2,1), opacity .4s ease, outline-color .3s ease;
+  }
+  .panel.in-view{ opacity:1; transform:scale(1) rotate(var(--tilt,0deg)); }
+
+  .panel:nth-child(1){ --tilt:-1.2deg; }
+  .panel:nth-child(2){ --tilt:0.8deg; }
+  .panel:nth-child(3){ --tilt:-0.6deg; }
+  .panel:nth-child(4){ --tilt:1deg; }
+  .panel:nth-child(5){ --tilt:-1deg; }
+  .panel:nth-child(6){ --tilt:0.5deg; }
+
+  .panel:hover{ outline-color:var(--cyan); z-index:2; }
+
+  .panel-art{
+    position:absolute; inset:0;
+    background-size:cover;
+  }
+  .panel:nth-child(1) .panel-art{ background:radial-gradient(circle at 30% 30%, #ff3b52, #4a0713 75%); }
+  .panel:nth-child(2) .panel-art{ background:radial-gradient(circle at 70% 20%, #00d9e8, #061c2b 75%); }
+  .panel:nth-child(3) .panel-art{ background:radial-gradient(circle at 50% 70%, #6a2bff, #0a0620 75%); }
+  .panel:nth-child(4) .panel-art{ background:radial-gradient(circle at 40% 60%, #ff8a00, #331700 75%); }
+  .panel:nth-child(5) .panel-art{ background:radial-gradient(circle at 60% 40%, #ff2d43, #100208 75%); }
+  .panel:nth-child(6) .panel-art{ background:radial-gradient(circle at 35% 45%, #00f0ff, #04141a 75%); }
+
+  .panel-art::after{
+    content:"";
+    position:absolute; inset:0;
+    background-image:radial-gradient(rgba(4,4,6,0.9) 1.6px, transparent 1.8px);
+    background-size:8px 8px;
+    mix-blend-mode:multiply;
+    opacity:0.6;
+  }
+
+  .panel-fx{
+    position:absolute;
+    font-family:'Anton', sans-serif;
+    color:var(--paper);
+    -webkit-text-stroke:2px var(--black);
+    font-size:clamp(26px,4vw,40px);
+    transform:rotate(-8deg);
+    z-index:3;
+    text-shadow:3px 3px 0 var(--red);
+    pointer-events:none;
+  }
+  .panel:nth-child(1) .panel-fx{ top:14%; right:8%; }
+  .panel:nth-child(2) .panel-fx{ bottom:12%; left:8%; transform:rotate(6deg); }
+  .panel:nth-child(3) .panel-fx{ top:10%; left:10%; transform:rotate(-4deg); }
+  .panel:nth-child(4) .panel-fx{ bottom:14%; right:10%; transform:rotate(10deg); }
+  .panel:nth-child(5) .panel-fx{ top:16%; left:12%; transform:rotate(-10deg); }
+  .panel:nth-child(6) .panel-fx{ bottom:10%; right:12%; transform:rotate(5deg); }
+
+  .panel-label{
+    position:absolute;
+    bottom:0; left:0; right:0;
+    z-index:4;
+    padding:14px 16px;
+    background:linear-gradient(to top, rgba(3,3,5,0.95), transparent);
+  }
+  .panel-label .n{
+    font-size:11px;
+    letter-spacing:2px;
+    color:var(--cyan);
+    font-weight:700;
+    margin-bottom:2px;
+  }
+  .panel-label .t{
+    font-family:'Anton', sans-serif;
+    font-size:17px;
+    color:var(--paper);
+    letter-spacing:0.5px;
+  }
+
+  /* ---------- manifesto ---------- */
+
+  .manifesto{ background:var(--navy); }
+
+  .manifesto-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:60px;
+    align-items:start;
+  }
+
+  .manifesto-text{
+    font-family:'Anton', sans-serif;
+    font-size:clamp(26px, 3.6vw, 42px);
+    line-height:1.18;
+    text-transform:none;
+    letter-spacing:0.2px;
+  }
+  .manifesto-text .hi{ color:var(--red); }
+  .manifesto-text .hi2{
+    color:var(--black);
+    -webkit-text-stroke:1px var(--cyan);
+  }
+
+  .stat-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    border-top:1px solid var(--panel-edge);
+  }
+  .stat-row{
+    display:grid;
+    grid-template-columns:100px 1fr;
+    align-items:center;
+    gap:20px;
+    padding:26px 0;
+    border-bottom:1px solid var(--panel-edge);
+  }
+  .stat-num{
+    font-family:'Anton', sans-serif;
+    font-size:56px;
+    color:var(--paper);
+    -webkit-text-stroke:1px var(--red);
+  }
+  .stat-label{
+    font-size:13px;
+    letter-spacing:1.5px;
+    color:var(--paper-dim);
+    text-transform:uppercase;
+  }
+
+  /* ---------- selected work ---------- */
+
+  .work-list{ border-top:1px solid var(--panel-edge); }
+
+  .work-row{
+    display:grid;
+    grid-template-columns:60px 2fr 1fr auto;
+    align-items:center;
+    gap:24px;
+    padding:30px 0;
+    border-bottom:1px solid var(--panel-edge);
+    position:relative;
+    transition:padding-left .3s ease, color .3s ease;
+  }
+  .work-row:hover{ padding-left:16px; }
+  .work-row:hover .work-name{ color:var(--red); }
+  .work-row:hover .work-bg{ transform:scaleX(1); }
+
+  .work-bg{
+    position:absolute;
+    inset:0;
+    background:var(--panel);
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform .35s ease;
+    z-index:-1;
+  }
+
+  .work-idx{
+    font-size:13px;
+    color:var(--cyan);
+    font-weight:700;
+  }
+  .work-name{
+    font-family:'Anton', sans-serif;
+    font-size:clamp(22px,3vw,34px);
+    transition:color .3s ease;
+  }
+  .work-cat{
+    font-size:13px;
+    color:var(--paper-dim);
+    letter-spacing:1px;
+  }
+  .work-year{
+    font-size:13px;
+    color:var(--paper-dim);
+  }
+
+  /* ---------- footer ---------- */
+
+  footer{
+    background:var(--black);
+    position:relative;
+    padding:120px 0 40px;
+    overflow:hidden;
+  }
+
+  .footer-title{
+    font-size:clamp(46px, 10vw, 130px);
+    color:var(--black);
+    -webkit-text-stroke:2px var(--paper);
+    text-align:center;
+    line-height:0.95;
+  }
+  .footer-title span{
+    display:block;
+    color:var(--red);
+    -webkit-text-stroke:2px var(--red);
+    text-shadow:0 0 40px rgba(255,45,67,0.5);
+  }
+
+  .footer-cta{
+    display:flex;
+    justify-content:center;
+    margin-top:36px;
+  }
+  .footer-cta a{
+    border:2px solid var(--paper);
+    padding:16px 40px;
+    font-weight:700;
+    letter-spacing:2px;
+    font-size:13px;
+    border-radius:100px;
+    transition:background .25s ease, color .25s ease, border-color .25s ease;
+  }
+  .footer-cta a:hover{
+    background:var(--cyan);
+    border-color:var(--cyan);
+    color:var(--black);
+  }
+
+  .footer-bottom{
+    margin-top:100px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:14px;
+    padding-top:24px;
+    border-top:1px solid var(--panel-edge);
+    font-size:12px;
+    color:var(--paper-dim);
+    letter-spacing:0.5px;
+  }
+  .footer-socials{ display:flex; gap:22px; }
+  .footer-socials a:hover{ color:var(--cyan); }
+
+  /* ---------- responsive ---------- */
+
+  @media (max-width:900px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .char-card{ margin:0 auto; max-width:340px; }
+    .comic-grid{ grid-template-columns:repeat(2,1fr); }
+    .manifesto-grid{ grid-template-columns:1fr; }
+    .work-row{ grid-template-columns:36px 1fr auto; }
+    .work-cat{ display:none; }
+  }
+  @media (max-width:560px){
+    .comic-grid{ grid-template-columns:1fr; }
+    .nav-links{ gap:14px; font-size:12px; }
+    .meta-tags div{ flex:1 1 100%; border-right:none; border-bottom:1px solid var(--panel-edge); padding-bottom:12px; margin-bottom:12px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--cyan);
+    outline-offset:3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-mark"><span></span>B.T.M. STUDIO</div>
+    <nav class="nav-links">
+      <a href="#work">WORK</a>
+      <a href="#studio">STUDIO</a>
+      <a href="#contact">CONTACT</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="sunburst"></div>
+  <div class="web-lines"></div>
+  <div class="wrap hero-grid">
+
+    <div class="hero-copy">
+      <div class="kicker">CREATIVE DEVELOPER &amp; ART DIRECTOR</div>
+      <h1 class="hero-title">BEYOND<br>THE <span class="line2">MASK</span></h1>
+      <p class="hero-sub">Interactive design and front-end craft for brands that want to feel dangerous, kinetic, and a little bit unreal. Every build starts with a story, then gets engineered underneath.</p>
+
+      <div class="meta-tags">
+        <div>
+          <div class="meta-label">ROLE</div>
+          <div class="meta-value">Creative Developer &amp; Art Director</div>
+        </div>
+        <div>
+          <div class="meta-label">FOCUS</div>
+          <div class="meta-value">Interactive Media, Motion &amp; Identity</div>
+        </div>
+        <div>
+          <div class="meta-label">ISSUE</div>
+          <div class="meta-value">N°01 / 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-stage">
+      <div class="char-card" id="charCard">
+        <div class="halftone"></div>
+        <div class="spotlight" id="spotlight"></div>
+        <div class="wireframe"></div>
+        <div class="scanline"></div>
+
+        <div class="char-figure">
+          <img class="char-photo portrait" src="images/portrait.jpg" alt="Khaidar Sinan A — unmasked">
+          <img class="char-photo mask" src="images/mask.jpg" alt="Spider-Man mask">
+        </div>
+
+        <div class="glitch-r" style="background:repeating-linear-gradient(0deg, rgba(255,45,67,0.35) 0 2px, transparent 2px 4px);"></div>
+        <div class="glitch-c" style="background:repeating-linear-gradient(0deg, rgba(0,240,255,0.3) 0 1px, transparent 1px 5px); transform:translateX(2px);"></div>
+
+        <div class="card-caption">
+          <div>FIG. 01 <br><strong>UNMASKED PROTOCOL</strong></div>
+          <div>HOVER TO SCAN</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===================== MARQUEE ===================== -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <span>IDENTITY</span><span>CRAFT</span><span>DESIGN</span><span>CODE</span><span>MOTION</span>
+    <span>IDENTITY</span><span>CRAFT</span><span>DESIGN</span><span>CODE</span><span>MOTION</span>
+  </div>
+</div>
+
+<!-- ===================== COMIC GRID ===================== -->
+<section id="work">
+  <div class="wrap comic-grid-wrap">
+    <div class="section-head">
+      <h2 class="section-title">DON'T LOOK<br><span class="accent">DOWN</span></h2>
+      <div class="section-num">06 SELECTED FRAMES</div>
+    </div>
+
+    <div class="comic-grid" id="comicGrid">
+      <div class="panel"><div class="panel-art"></div><div class="panel-fx">BAM!</div><div class="panel-label"><div class="n">FRAME 01</div><div class="t">Spectral City — Launch Film</div></div></div>
+      <div class="panel"><div class="panel-art"></div><div class="panel-fx">ZAP!</div><div class="panel-label"><div class="n">FRAME 02</div><div class="t">Neon Districts — Brand System</div></div></div>
+      <div class="panel"><div class="panel-art"></div><div class="panel-fx">POW!</div><div class="panel-label"><div class="n">FRAME 03</div><div class="t">Silk Protocol — Product Drop</div></div></div>
+      <div class="panel"><div class="panel-art"></div><div class="panel-fx">BOOM!</div><div class="panel-label"><div class="n">FRAME 04</div><div class="t">Half-Tone Hearts — Editorial</div></div></div>
+      <div class="panel"><div class="panel-art"></div><div class="panel-fx">CRASH!</div><div class="panel-label"><div class="n">FRAME 05</div><div class="t">Static Bloom — Motion Study</div></div></div>
+      <div class="panel"><div class="panel-art"></div><div class="panel-fx">WHAM!</div><div class="panel-label"><div class="n">FRAME 06</div><div class="t">Nightcall — Interactive Site</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MANIFESTO ===================== -->
+<section id="studio" class="manifesto">
+  <div class="web-lines"></div>
+  <div class="wrap manifesto-grid">
+    <p class="manifesto-text">
+      Every project wears two faces — <span class="hi">the one the world sees</span>, and the engineered anatomy underneath. I build digital experiences where craft hides in plain night, waiting for the <span class="hi2">scroll, the hover, the reveal.</span>
+    </p>
+
+    <div class="stat-grid">
+      <div class="stat-row"><div class="stat-num">08</div><div class="stat-label">Years building interactive work</div></div>
+      <div class="stat-row"><div class="stat-num">34</div><div class="stat-label">Projects shipped to production</div></div>
+      <div class="stat-row"><div class="stat-num">12</div><div class="stat-label">Awards &amp; features collected</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SELECTED WORK LIST ===================== -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="section-title">SELECTED<br><span class="accent">WORK</span></h2>
+      <div class="section-num">2022 — 2026</div>
+    </div>
+
+    <div class="work-list">
+      <a class="work-row" href="#">
+        <div class="work-bg"></div>
+        <div class="work-idx">01</div>
+        <div class="work-name">Spectral City</div>
+        <div class="work-cat">Interactive Film</div>
+        <div class="work-year">2026</div>
+      </a>
+      <a class="work-row" href="#">
+        <div class="work-bg"></div>
+        <div class="work-idx">02</div>
+        <div class="work-name">Neon Districts</div>
+        <div class="work-cat">Brand System</div>
+        <div class="work-year">2025</div>
+      </a>
+      <a class="work-row" href="#">
+        <div class="work-bg"></div>
+        <div class="work-idx">03</div>
+        <div class="work-name">Silk Protocol</div>
+        <div class="work-cat">Product Launch</div>
+        <div class="work-year">2024</div>
+      </a>
+      <a class="work-row" href="#">
+        <div class="work-bg"></div>
+        <div class="work-idx">04</div>
+        <div class="work-name">Half-Tone Hearts</div>
+        <div class="work-cat">Editorial</div>
+        <div class="work-year">2023</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer id="contact">
+  <div class="web-lines"></div>
+  <div class="wrap">
+    <h2 class="footer-title">LET'S MAKE<br><span>A SCENE</span></h2>
+    <div class="footer-cta">
+      <a href="mailto:studio@beyondthemask.work">START A PROJECT</a>
+    </div>
+
+    <div class="footer-bottom">
+      <div>CRAFTED WITH OBSESSION, RELEASED ON HOOD.</div>
+      <div class="footer-socials">
+        <a href="#">INSTAGRAM</a>
+        <a href="#">TWITTER / X</a>
+        <a href="#">READ.CV</a>
+      </div>
+      <div>© 2026 B.T.M. STUDIO</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Spotlight follows the cursor over the hero character card
+  const card = document.getElementById('charCard');
+  if (card) {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * 100;
+      const y = ((e.clientY - r.top) / r.height) * 100;
+      card.style.setProperty('--mx', x + '%');
+      card.style.setProperty('--my', y + '%');
+    });
+  }
+
+  // One-time staggered reveal for the comic grid panels
+  const panels = document.querySelectorAll('#comicGrid .panel');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(panels).indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('in-view'), idx * 90);
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  panels.forEach(p => io.observe(p));
+</script>
+
+</body>
+</html>
